@@ -28,8 +28,6 @@ An evidence-first resume intelligence platform that analyzes a candidate's resum
 
 ---
 
----
-
 ## ⚙️ Quickstart
 
 ### 1. Backend Setup
