@@ -1,129 +1,110 @@
-# 🧠 Talent Finder
+# 📄 Job-Specific Resume Intelligence Platform
 
-AI-powered resume ranking and matching system that allows users to upload resumes and match them to job descriptions using semantic search, advanced filters, and a modern UI.
+> **Understand how your resume fits a specific job. Improve it before you apply.**
 
----
-
-## 🚀 Features
-
-* 📄 Upload and parse resumes (PDF/DOCX)
-* 🤖 AI-powered semantic search (Instructor model)
-* 🔍 Top-k matching resumes with similarity scores
-* 🔐 JWT-based authentication
-* 🎨 Frontend with React + Tailwind CSS
+An evidence-first resume intelligence platform that analyzes a candidate's resume against any target job description. Produces a transparent **Job Match Score**, requirement coverage breakdown, missing skills map, evidence citations, and grounded optimization recommendations.
 
 ---
 
-## 🛠️ Tech Stack
+## 🎯 Product Principles
 
-| Layer     | Technology                                    |
-| --------- | --------------------------------------------- |
-| Frontend  | React, Tailwind CSS                           |
-| Backend   | FastAPI, Pydantic                             |
-| DB        | PostgreSQL                                    |
-| Vector DB | Qdrant                                        |
-| ML Model  | hkunlp/instructor-large (InstructorEmbedding) |
-| Auth      | JWT                                           |
+* **Evidence-First:** Every requirement match is grounded in direct quotes/citations from the candidate's resume.
+* **No Black-Box ATS Claims:** Deterministic scoring with complete transparency—no pretending to simulate arbitrary commercial ATS algorithms.
+* **No Fabricated Recommendations:** Suggestions refine existing experience and reframe adjacent skills, but never invent claims for missing qualifications.
+* **Hybrid Architecture:** Deterministic text extraction & matching + LLM semantic interpretation for ambiguous requirements.
 
 ---
 
-## 📁 Backend Structure
+## 🛠️ Architecture & Tech Stack
 
-```bash
-backend/
-│
-├── app.py                        # Main FastAPI app with startup logic & background scheduler
-├── db.py                         # SQLAlchemy database session and engine setup
-├── config.py                     # Environment & app configuration using Pydantic
-├── models.py                     # SQLAlchemy ORM models for PostgreSQL
-├── schemas.py                    # Pydantic schemas for request/response validation
-├── requirements.txt              # Python dependencies
-│
-├── routes/                       # API route definitions
-│   ├── auth.py                   # Authentication routes (login, token)
-│   └── resumes.py                # Resume upload, count, and search endpoints
-│
-├── services/
-│   ├── upload_backend/
-│   │   ├── upload.py             # Custom resume parser & uploader
-│   │   ├── template.py           # Jinja2 or resume format template handling
-│   │   └── prompt.json           # Prompt for LLM-based resume parsing
-│   ├── search_batch.py           # Batch search logic using embedding or reranking
-│   ├── search_template.py        # Prompt templates for job description parsing
-│   └── structured_ranking_prompt.json # LLM prompt for structured reranking
-│
-├── utils/
-│   ├── cleanup.py                # Background task to delete expired resumes - auto delete
-│   ├── jwt.py                    # JWT creation and verification logic
-│   ├── qdrant_client_wrapper.py # Wrapper to initialize and manage Qdrant client
-│   └── logger.py                 # Centralized logging config (used across backend)
+| Layer | Technology |
+|---|---|
+| **Frontend** | React 18, Tailwind CSS v3, Framer Motion, Lucide Icons, Axios |
+| **Backend API** | FastAPI, Pydantic v2, Python 3.12+ |
+| **Database** | PostgreSQL / SQLite with SQLAlchemy ORM (Versioned JSON analysis store) |
+| **Extraction** | `pdfplumber` (deterministic PDF text), `BeautifulSoup4` (URL job extraction) |
+| **LLM Inference** | Groq (Llama-3 / GPT-OSS / Qwen with 128k context) via `langchain-groq` |
+| **Authentication** | JWT Authentication (`python-jose`, `bcrypt`) |
 
+---
+
+## 📁 Clean Repository Structure
+
+```text
+├── backend/
+│   ├── app.py                     # FastAPI application & route registration
+│   ├── config.py                  # Pydantic Settings & model configuration
+│   ├── db.py                      # SQLAlchemy session engine
+│   ├── models.py                  # User & Application models
+│   ├── schemas.py                 # Request/Response Pydantic schemas
+│   ├── requirements.txt           # Backend Python dependencies
+│   ├── routes/
+│   │   ├── auth.py                # Signup / Login JWT authentication
+│   │   └── applications.py        # Job creation, resume upload, fit analysis
+│   ├── services/
+│   │   ├── text_extractor.py      # Deterministic PDF and URL text extraction
+│   │   ├── job_parser.py          # Structured JD requirement parsing
+│   │   ├── resume_parser.py       # Structured resume section parsing
+│   │   ├── matcher.py             # Deterministic + LLM evidence matcher & scorer
+│   │   └── recommender.py         # Grounded resume improvement recommendations
+│   └── utils/
+│       ├── jwt.py                 # JWT token generation & authentication
+│       └── logger.py              # Centralized logging
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── analysis/          # ScoreOverview, EvidenceMap, RecommendationList
+│   │   │   ├── job/               # JobInput, JobRequirements
+│   │   │   ├── layout/            # Header, Sidebar
+│   │   │   ├── resume/            # ResumeUpload, ResumePreview
+│   │   │   └── ui/                # Card, ScoreRing, ProgressBar, MatchBadge, DiffBlock
+│   │   ├── hooks/                 # useApplications, useTheme
+│   │   ├── pages/                 # LandingPage, MainApp, login, AuthContext
+│   │   ├── services/              # api.js Axios client
+│   │   ├── App.js                 # Router & theme providers
+│   │   └── index.css              # Custom styling & Tailwind design system
+│   └── tailwind.config.js         # Semantic match colors & typography tokens
 ```
 
 ---
 
-## ⚙️ Setup Instructions
+## ⚙️ Quickstart
 
-### 🔧 Backend
+### 1. Backend Setup
 
 ```bash
-git clone https://github.com/Yashwanth137/LinkedIn-Talent-Finder.git
 cd backend
-
-# Create a virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: .\venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Create a .env file
+# Create .env
+cat <<EOF > .env
+secret_key=your_jwt_secret_key
+postgres_url=sqlite:///./test.db
+api=your_groq_api_key
+api1=your_backup_groq_api_key
+api2=your_backup_groq_api_key
+EOF
+
+# Start the backend server
+uvicorn app:app --reload --port 8000
 ```
 
-`.env` example:
-
-```env
-SECRET_KEY=your-secret
-postgres_url=postgresql+psycopg2://user:password@localhost:5432/<database_name>
-qdrant_host=http://localhost:6333 
-embedding_dim=1024
-api=your-api-key
-
-api1=your-api-key
-api2=your-api-key
-```
-
-```bash
-# Start the FastAPI app
-uvicorn app:app --reload
-```
-
----
-
-### 🌐 Frontend
+### 2. Frontend Setup
 
 ```bash
 cd frontend
 npm install
-npm run start
+npm start
 ```
+
+Visit `http://localhost:3000` to use the application.
 
 ---
 
-## 🔐 Authentication
-
-* JWT-based login (`/auth/login`) returns token
-* Include token in `Authorization` header:
-
-```http
-Authorization: Bearer <token>
-```
-
-## 📄 Documentation
-
-📘 [Read the full documentation](https://talentfinderdocs.netlify.app/)
-
-Includes setup, API reference, models, and usage instructions.
-
-📄 License
+## 📄 License
 MIT License

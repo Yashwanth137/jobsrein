@@ -1,29 +1,30 @@
+# Core framework
 fastapi
 uvicorn
 python-dotenv
+
+# Validation
 pydantic
 pydantic-settings
 pydantic[email]
-python-jose[cryptography] 
-bcrypt
-sqlalchemy 
-psycopg2-binary 
-qdrant-client 
-sentence-transformers 
-pymupdf
-python-docx
 
-ollama
-tqdm
+# Auth
+python-jose[cryptography]
+bcrypt
+
+# Database
+sqlalchemy
+psycopg2-binary
+
+# PDF text extraction
 pdfplumber
 
+# URL text extraction
+requests
+beautifulsoup4
+python-multipart
+
+# LLM (Groq via LangChain)
 langchain
 langchain-core
-langchain-ollama
-langchain-community  
-
 langchain-groq
-InstructorEmbedding
-apscheduler
-
-

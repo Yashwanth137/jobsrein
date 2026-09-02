@@ -1,46 +1,47 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import Hero from "./pages/hero.jsx";
-import LoginRegisterPage from "./pages/login.jsx";
-import ProtectedRoute from "./pages/ProtectedRoute.jsx";
-import TabLayout from "./pages/TabLayout.jsx";
-import ProfilePage from "./pages/profilepage.jsx";
-import { AuthProvider } from "./pages/AuthContext.jsx";
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from './hooks/useTheme';
+import { AuthProvider, useAuth } from './pages/AuthContext';
+
+import LandingPage from './pages/LandingPage';
+import LoginRegisterPage from './pages/login';
+import MainApp from './pages/MainApp';
+
+// Protected Route Wrapper
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  return children;
+};
+
+// Redirect if already logged in
+const PublicRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) return <Navigate to="/app" replace />;
+  return children;
+};
 
 function App() {
-  const [msg, setMsg] = useState("");
-
-  useEffect(() => {
-    fetch("http://localhost:8000/")
-      .then((res) => res.json())
-      .then((data) => {
-        setMsg(JSON.stringify(data.sample_user, null, 2));
-      })
-      .catch((err) => console.error("Fetch error:", err));
-  }, []);
-
   return (
-    <Router>
+    <ThemeProvider>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Hero />} />
-          <Route path="/login" element={<LoginRegisterPage />} />
-
-          <Route
-            path="/app"
-            element={
-              <ProtectedRoute>
-                <TabLayout />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route path="/input" element={<Navigate to="/app" replace />} />
-
-          <Route path="/profile/:id" element={<ProfilePage />} />
-        </Routes>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
+            <Route path="/login" element={<PublicRoute><LoginRegisterPage /></PublicRoute>} />
+            <Route
+              path="/app/*"
+              element={
+                <ProtectedRoute>
+                  <MainApp />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
       </AuthProvider>
-    </Router>
+    </ThemeProvider>
   );
 }
 

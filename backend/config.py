@@ -1,17 +1,20 @@
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
     secret_key: str
     postgres_url: str
-    qdrant_host: str = "http://localhost:6333"
-    qdrant_collection: str = "resume_vectors2"  
-    embedding_dim: int = 1024
-    api: str
-    api2: str 
-    api1: str
+    api: str        # Primary Groq API key
+    api1: str       # Backup key 1
+    api2: str       # Backup key 2
+
+    # LLM settings
+    groq_model: str = "openai/gpt-oss-120b"
+    llm_temperature: float = 0.0
 
     class Config:
         env_file = ".env"
         extra = "ignore"
+
 
 settings = Settings()
