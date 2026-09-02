@@ -28,45 +28,6 @@ An evidence-first resume intelligence platform that analyzes a candidate's resum
 
 ---
 
-## 📁 Clean Repository Structure
-
-```text
-├── backend/
-│   ├── app.py                     # FastAPI application & route registration
-│   ├── config.py                  # Pydantic Settings & model configuration
-│   ├── db.py                      # SQLAlchemy session engine
-│   ├── models.py                  # User & Application models
-│   ├── schemas.py                 # Request/Response Pydantic schemas
-│   ├── requirements.txt           # Backend Python dependencies
-│   ├── routes/
-│   │   ├── auth.py                # Signup / Login JWT authentication
-│   │   └── applications.py        # Job creation, resume upload, fit analysis
-│   ├── services/
-│   │   ├── text_extractor.py      # Deterministic PDF and URL text extraction
-│   │   ├── job_parser.py          # Structured JD requirement parsing
-│   │   ├── resume_parser.py       # Structured resume section parsing
-│   │   ├── matcher.py             # Deterministic + LLM evidence matcher & scorer
-│   │   └── recommender.py         # Grounded resume improvement recommendations
-│   └── utils/
-│       ├── jwt.py                 # JWT token generation & authentication
-│       └── logger.py              # Centralized logging
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── analysis/          # ScoreOverview, EvidenceMap, RecommendationList
-│   │   │   ├── job/               # JobInput, JobRequirements
-│   │   │   ├── layout/            # Header, Sidebar
-│   │   │   ├── resume/            # ResumeUpload, ResumePreview
-│   │   │   └── ui/                # Card, ScoreRing, ProgressBar, MatchBadge, DiffBlock
-│   │   ├── hooks/                 # useApplications, useTheme
-│   │   ├── pages/                 # LandingPage, MainApp, login, AuthContext
-│   │   ├── services/              # api.js Axios client
-│   │   ├── App.js                 # Router & theme providers
-│   │   └── index.css              # Custom styling & Tailwind design system
-│   └── tailwind.config.js         # Semantic match colors & typography tokens
-```
-
 ---
 
 ## ⚙️ Quickstart
