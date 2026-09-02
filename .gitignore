@@ -50,3 +50,4 @@ $RECYCLE.BIN/
 
 # Optional: ignore all .env files globally
 .env
+TELEGRAM_AGENT.md
